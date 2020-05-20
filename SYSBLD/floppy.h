@@ -1,0 +1,1 @@
+#define floppy 1
