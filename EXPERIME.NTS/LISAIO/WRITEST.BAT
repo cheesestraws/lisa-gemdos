@@ -5,6 +5,7 @@ rem build writest
 \tools\c168 writest.1 writest.2 writest.s 
 era  writest.1
 era writest.2
+
 \tools\as68 -l -s \tools\ -u writest.s 
 \tools\as68 -l -s \tools\ -u profilio.s 
 \tools\as68 -l -s \tools\ -u profiglu.s 
