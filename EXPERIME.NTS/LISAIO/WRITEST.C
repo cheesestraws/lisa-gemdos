@@ -9,6 +9,11 @@
 char buf[BUFSIZ];
 char ret[BUFSIZ];
 
+
+extern p_setup();
+extern p_init();
+extern p_io(/*long bcmd, long rtrspr, char* buf*/);
+
 #define BPB struct _bpb
 BPB /* bios parameter block */
 {

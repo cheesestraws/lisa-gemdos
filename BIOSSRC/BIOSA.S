@@ -165,7 +165,7 @@ clrmor:	clr.w	(a0)+		* zero out our bss to initialize it
 *
 	move.l	#_nmibrk,$7c	* set nmi to do an illegal instruction
 	move.l	#keyint,$68	* revector the keyboard interrupt to keyint
-	move.l	#_slot3i,$74	* level 5 autovector is slot 3
+*	move.l	#_slot3i,$74	* level 5 autovector is slot 3
 *	move.l	#_slot3i,$70	* level 6 autovector is slot 2
 	move.l	#_fdint,$64
 	move.l	#bios,$b4	* bios entry is trap #13
