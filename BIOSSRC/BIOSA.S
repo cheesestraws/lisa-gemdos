@@ -47,7 +47,6 @@ panic	equ	0	* 0 if no cmpanic routine available
 
 	.xdef	_dskinit
 	.xdef	_coninit
-	.xdef	_proint
 	.xdef	_fdint
 	.xdef	_fdinit
 	.xdef	_timetck
@@ -430,7 +429,7 @@ keyint:	movem.l	d0-d2/a0-a2,-(sp)	* save these registers on the sys stack
 *  slot3i -
 *
 _slot3i: movem.l d0-d2/a0-a2,-(sp)	* save these registers on the sys stack
-	jsr	_proint
+	bra retint
 
 *
 *  return from interrupt
