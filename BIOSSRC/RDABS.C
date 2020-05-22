@@ -42,6 +42,8 @@ extern p_setup(/* long drive */);
 extern p_init();
 extern p_io(/*long bcmd, long rtrspr, char* buf*/);
 
+extern cputc();
+
 
 dskinit()
 {
@@ -162,6 +164,64 @@ prostat()
 	for (i=0; i<4; i++) pstat[i] = *(prof + 9);
 }
 
+bwi(i) 
+long i;
+{
+	char itoabuf[20];
+	int j;
+	itoa(i, itoabuf);
+
+	j = 0;
+	
+	cputc(40);
+	while (itoabuf[j]) {
+		cputc((int)(itoabuf[j]));
+		j++;
+	}
+	cputc(41);
+}
+
+itoa(n, str)
+long n;
+char* str;
+{
+	char buf[20];
+	int i; // index into buffer
+	int j; // index into output string 
+	long rem;
+	
+	i = 0;	
+	
+	// Terminating nul here.  We're constructing the string backwards so
+	// put the nul first.
+	buf[i++] = '\0';
+	
+	// Zero?
+	if (n == 0) 
+	{
+		buf[i++] = '0';
+	}
+		
+	// Iterate
+	while (n > 0) {
+		rem = n & 0x0000000F;
+		n -= rem;
+		if (rem < 10) {
+			buf[i++] = rem + '0';
+		} else {
+			buf[i++] = (rem - 10) + 'A';
+		}
+		n = n >> 4;
+	}
+	
+	// Now read the string out backwards.
+	j = 0;
+	while (i >= 0) {
+		str[j++] = buf[--i];
+	}
+}
+
+
 
 dskrw(blk,buffer,rw,drive)
 long blk;
@@ -172,8 +232,13 @@ char *buffer;
 	char x;
 	
 	long blkcmd;
+	int err;
 		
 	if (drive < 2) return(flprw(blk,buffer,rw,drive));
+	
+	cputc(80);
+	cputc(80);
+	cputc(80);
 	
 	// if we are writing, then fill the buffer
 	if (rw) {	
@@ -188,16 +253,31 @@ char *buffer;
 		for (i = 0; i < 512; i++) {
 			p_buf[i+20] = buffer[i];
 		}
+		
+		cputc(87);
+		cputc(87);
+		cputc(87);
 	}
 	
-	blkcmd = (blk << 8) & rw;
-	p_io(blkcmd, (long)0x0A03, p_buf);
+	blkcmd = (blk << 8) | (long)rw;
+	bwi(blkcmd);
+	err = p_io(blkcmd, (long)0x0A03, p_buf);
+	if (err != 0) {
+		cputc(69);
+		cputc(69);
+		cputc(69);
+		return err;
+	}
 	
 	// if we are reading, copy the internal buffer out
 	if (!rw) {
 		for (i = 0; i < 512; i++) {
 			buffer[i] = p_buf[i+20];
 		}
+		
+		cputc(82);
+		cputc(82);
+		cputc(82);
 	}
 	
 // 	prof = pbase + ((((long) (drv[drive-2] << 8))) & 0x0000ffffL);

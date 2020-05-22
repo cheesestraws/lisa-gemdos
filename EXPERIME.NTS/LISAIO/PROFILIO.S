@@ -203,6 +203,7 @@
 xref _pfhdstup
 xref _pfhdinit
 xref _pfhdio
+xref zProFileErrCode
 
 _pfhdstup: 
     MOVE.W  #$FC,D1                * Special I/O space starts at $FC0000
