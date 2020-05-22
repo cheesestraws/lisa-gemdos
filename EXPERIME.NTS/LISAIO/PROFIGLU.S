@@ -6,6 +6,8 @@ xref _pfhdinit
 xref _pfhdio
 
 xdef _p_setup
+xdef _p_init
+xdef _p_io
 
 * _p_setup(long id)
 _p_setup:

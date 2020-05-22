@@ -10,7 +10,7 @@ char buf[BUFSIZ];
 char ret[BUFSIZ];
 
 
-extern p_setup();
+extern p_setup(/* long drive */);
 extern p_init();
 extern p_io(/*long bcmd, long rtrspr, char* buf*/);
 
@@ -56,51 +56,61 @@ char* p;
 	/* Init the disk's FATS and root directory. */
 
 	for (i=0; i < BUFSIZ; i++)
-		buf[i] = 0xCC;
-
+		buf[i] = 0x10;
+	
+	// I'M BORED OF BEING PROTECTED
+	// SUPERVISOR MODE AHOY BABEH
 	sp = S_State(0L);
 
-	b = GetBPB(drv);
 
-//	if (b->b_flags & 1)
-		buf[3] = 0xFF;
+// 	for (i=1; i < 8000; i++) {
+// 		// write
+// 	
+// 		C_ConWS("(dev ");
+// 		C_ConWI(drv);
+// 		C_ConWS(") ");
+// 		C_ConWS("Writing block ");
+// 		C_ConWI(i);
+// 		C_ConWS("\r\n");
+// 		err = RWAbs(1,buf,1,i,drv);
+// 		if (err == 0) {
+// 			C_ConWS("              (ok)\r\n");
+// 		} else {
+// 			C_ConWS("              (");
+// 			C_ConWI((int)err);
+// 			C_ConWS(")\r\n");
+// 		}
+// 		
+// 		// verify
+// 		for (j=0; j < BUFSIZ; j++) {
+// 			ret[j] = '\0';
+// 		}
+// 		
+// 		err = RWAbs(0, ret, 1, i, drv);
+// 		if (err == 0) {
+// 			C_ConWS("              (ok)\r\n");
+// 		} else {
+// 			C_ConWS("              (");
+// 			C_ConWI((int)err);
+// 			C_ConWS(")\r\n");
+// 		}
+// 		
+// 		C_ConWS("              (<- ");
+// 		C_ConWI((int)(ret[0]));
+// 		C_ConWS(")\r\n");		
+// 	}
 
-	for (i=1; i < 8000; i++) {
-		// write
-	
-		C_ConWS("(dev ");
-		C_ConWI(drv);
-		C_ConWS(") ");
-		C_ConWS("Writing block ");
-		C_ConWI(i);
-		C_ConWS("\r\n");
-		err = RWAbs(1,buf,1,i,drv);
-		if (err == 0) {
-			C_ConWS("              (ok)\r\n");
-		} else {
-			C_ConWS("              (");
-			C_ConWI((int)err);
-			C_ConWS(")\r\n");
-		}
-		
-		// verify
-		for (j=0; j < BUFSIZ; j++) {
-			ret[j] = '\0';
-		}
-		
-		err = RWAbs(0, ret, 1, i, drv);
-		if (err == 0) {
-			C_ConWS("              (ok)\r\n");
-		} else {
-			C_ConWS("              (");
-			C_ConWI((int)err);
-			C_ConWS(")\r\n");
-		}
-		
-		C_ConWS("              (<- ");
-		C_ConWI((int)(ret[0]));
-		C_ConWS(")\r\n");		
-	}
+	// Write
+	C_ConWS("initing...\r\n");
+	p_setup(0x02);
+	p_init();
+	C_ConWS("writing...\r\n");
+	p_io((long)0x00000201, (long)0x00000A03, buf);
+	C_ConWS("reading...\r\n");
+	p_io((long)0x00000200, (long)0x00000A03, ret);
+	C_ConWS("              (<- ");
+	C_ConWI((int)(ret[0]));
+	C_ConWS(")\r\n");		
 
 	S_State(sp);
 
