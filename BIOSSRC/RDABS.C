@@ -4,6 +4,7 @@ MODIFICATION HISTORY
 
 	20 AUG 85	LTG	Added drive check in rwas() to not return MEDIA_CHANGE
 				error if on fixed disk and eject floppy.
+	22 MAY 20   REM Shim ProFile code onto Tom Stepleton's LisaIO
 NAMES
 
 	LTG	Lou T. Garavaglia
@@ -20,53 +21,21 @@ NAMES
 #define	OLDRWABS	1
 
 extern char nsect[];
-char *pbase = (char*) 0xFC0000  ;
-char *prof,*pdat;
-char pstat[4]; /* profile status bytes */
-int iprstat;	/* profile interrupt state */
-int proflg,shkerr, pcmd, nx;
 int newdsk; /* sony disk has changed */
-char a;
 
- /* convert disk to hw #, only 1 profile supported at this time */
- /* 	drv = 0xd9;  internal */
- /*	drv = 0x68;  slot 2, port B */
-int drv[] = { 0xD9, 0x68 /*0x28, 0x20*/ } ;
-				/* slot 1 port B (upper), slot 1 A (lower) */
+char p_buf[532];
+
+/* in profiglu.s */
+extern p_setup(/* long drive */);
+extern p_init();
+extern p_io(/*long bcmd, long rtrspr, char* buf*/);
+
 
 dskinit()
 {
-	proinit(0x00D9); /* internal profile */
-	//proinit(drv[0]);
-	/* proinit(drv[1]); */
-}
 
-proinit(d)
-int d;
-{
-	char b;
-	register char *prof;
-	a = 0;
-	
-	prof = pbase + ((((long) (d << 8))) & 0x0000ffffL);
-	pdat = prof + 9;
-	prof[0x11] |= 0xa0; /* ddrb */
-	prof[0x01] |= 0xa0;	/* orb some reset signals */
-	prof[0x71] = 0x80;
-	prof[0x61] = 0x6a;	/* int on busy high - pcr */
-	prof[0x59] = 0;	/* acr */
-	prof[0x19] = 0;	/* ddra all input now */
-	prof[0x11] &= 0xfc;	/* more ddrb changes */
-	prof[0x11] |= 0x1c;
-	prof[0x01] &= 0xfb;	/* disk enable */
-	prof[0x01] |= 0x18;	/* set r/w (r), CMD* inactive */
-	while (!(prof[0x01] & 2)); /* wait for BUSY* inactive */
-	prof[0x69] = 0;	/* clear IFR */
-	do
-	{
-		prof[0x69] = (b = prof[0x69]);
-	} while (b);
-	prof[0x71] = 0x82;	/* int on ca1 (BSY) only */
+	p_setup((long)0x02);
+	p_init();
 }
 
 /*
@@ -142,15 +111,6 @@ char *buffer;
 
 /****** profile disk handler *****/
 
-prostat()
-{
-	int i;
-	*(prof + 1)    |= 8;
-	*(prof + 0x19)  = 0;
-	for (i=0; i<4; i++) pstat[i] = *(prof + 9);
-}
-
-
 dskrw(blk,buffer,rw,drive)
 long blk;
 int rw,drive;
@@ -158,88 +118,40 @@ char *buffer;
 {
 	int i,j;
 	char x;
+	
+	long blkcmd;
+	int err;
+		
 	if (drive < 2) return(flprw(blk,buffer,rw,drive));
-	prof = pbase + ((((long) (drv[drive-2] << 8))) & 0x0000ffffL);
-	pdat = prof + 9;
-	x = 0 ;
-	if (blk == 0) x = 0xAA;
-	if (shake(1)) return(1);
-	*pdat = rw;
-	*pdat = blk >> 16; /* blk # hi byte */
-	*pdat = blk >> 8;  /* blk # mid byte */
-	*pdat = blk++ ;	   /* blk # lo byte */
-	if (!rw)
-	{
-		*pdat = 105;  /* retry         */
-		*pdat = 53;   /* sparing count */
+		
+	// if we are writing, then fill the buffer
+	if (rw) {	
+		// fill tag bytes
+		x = 0;
+		if (blk == 0) { x = 0xAA; }
+	
+		for (i = 0; i < 20; i++) {
+			p_buf[i] = x;
+		}
+	
+		for (i = 0; i < 512; i++) {
+			p_buf[i+20] = buffer[i];
+		}
+		
 	}
-	if (shake(rw+2)) return((int)a);
-	switch(rw)
-	{
-		case 0:
-			prostat();
-			for (j=0; j<20 ; j++) x = *pdat ;
-			for (j=0; j<512; j++) *buffer++ = *pdat ;
-
-			break;
-		case 1:
-			for (j=0; j<20 ; j++) *pdat = x;
-			for (j=0; j<512; j++) *pdat = *buffer++;
-		 /* there's a whole lotta shakin goin on */
-			shake(6);
-			prostat();
-			break;
+	
+	blkcmd = (blk << 8) | (long)rw;
+	err = p_io(blkcmd, (long)0x0A03, p_buf);
+	if (err != 0) {
+		return err;
 	}
-	shake(4);  /* special shake */
+	
+	// if we are reading, copy the internal buffer out
+	if (!rw) {
+		for (i = 0; i < 512; i++) {
+			buffer[i] = p_buf[i+20];
+		}
+	}
+	
 	return(0); /* ok */
-}
-
-shake(n)
-int n;
-{
-	char *prx; /* local prof variable */
-	prx = prof;
-	iprstat = 0;
-	shkerr = 0;
-	pcmd = 0x55;
-	if (n == 4)
-	{
-		nx = 1;
-		pcmd = 0xAA;
-	}
-	else nx = n;
-	*(prx + 0x19)  = 0;	/* ddra = in */
-	*(prx + 1)    |= 8;	/* dir = in */
-	bcli();
-	*(prx + 0x61) &= 0xFE; /* int on busy high */
-	*(prx + 1)    &= 0xEF; /* set CMD high */
-	bsti();
-	while (!proflg);
-	proflg = 0;
-	return(shkerr);
-}
-
-
-proint()
-{
-	char *prx;
-	//char a;
-	prx = prof;
-	*(prx + 0x61) |= 0x0e;	/* hold ca2 high */
-	a = *(prx + 9);		/* read a to clear */
-	*(prx + 0x61) &= 0xfb;	/* restore ca2 pulse */
-	switch(iprstat)
-	{
-		case 0:
-			iprstat++;
-			if (a != nx) shkerr = 1;
-			*(prx + 1)    &= 0xF7; /* dir = out */
-			*(prx + 0x19)  = 0xFF; /* ddra = out */
-			*(prx + 0x79)  = pcmd;	/* send 55 or special */
-			*(prx + 0x61) |= 1;	/* int on busy low */
-			*(prx + 1)    |= 0x10; /* lower CMD */
-			break;
-		case 1:
-			proflg = 1;
-	}
 }

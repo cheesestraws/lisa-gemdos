@@ -47,7 +47,6 @@ panic	equ	0	* 0 if no cmpanic routine available
 
 	.xdef	_dskinit
 	.xdef	_coninit
-	.xdef	_proint
 	.xdef	_fdint
 	.xdef	_fdinit
 	.xdef	_timetck
@@ -165,7 +164,7 @@ clrmor:	clr.w	(a0)+		* zero out our bss to initialize it
 *
 	move.l	#_nmibrk,$7c	* set nmi to do an illegal instruction
 	move.l	#keyint,$68	* revector the keyboard interrupt to keyint
-	move.l	#_slot3i,$74	* level 5 autovector is slot 3
+*	move.l	#_slot3i,$74	* level 5 autovector is slot 3
 *	move.l	#_slot3i,$70	* level 6 autovector is slot 2
 	move.l	#_fdint,$64
 	move.l	#bios,$b4	* bios entry is trap #13
@@ -430,7 +429,7 @@ keyint:	movem.l	d0-d2/a0-a2,-(sp)	* save these registers on the sys stack
 *  slot3i -
 *
 _slot3i: movem.l d0-d2/a0-a2,-(sp)	* save these registers on the sys stack
-	jsr	_proint
+	bra retint
 
 *
 *  return from interrupt

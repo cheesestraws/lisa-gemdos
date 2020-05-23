@@ -1,6 +1,6 @@
 rem "Making GEMDOSHI.SYS for the 68000"
 del disk.h
-copy floppy.h disk.h
+copy hd.h disk.h
 c @cfls
 asm @sfls
 lc lisahi
