@@ -20,8 +20,10 @@ The rest of GEM also exists for the Lisa.  I aim to get to that in due course.
    `SETUP` - this copies the relevant files into the SYSBLD directory
    `MAKEFI` - this builds GEMDOSFI.SYS, which is a floppy disk bootable GEMDOS.
    
+   
 You can also use the `MAKEHI` batch file to make a hard disc bootable image.  But since hard disc support seems to be broken right now, this is probably less helpful.
 
+To build the screen driver `CD SCRNDRV` and run `MAKE`.
 
 ## Making a boot disc
 
