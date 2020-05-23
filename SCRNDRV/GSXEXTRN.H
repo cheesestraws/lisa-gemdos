@@ -1,5 +1,6 @@
 #include "fontdef.h"
 #include "attrdef.h"
+#include "portab.h"
 
 EXTERN	struct attribute virt_work;	/* Virtual workstation attributes */
 EXTERN	struct attribute *cur_work;	/* Pointer to current works attr. */

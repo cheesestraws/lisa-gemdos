@@ -9,8 +9,8 @@
 #define BYTE	char				/* Signed byte		   */
 #define UBYTE	char				/* Unsigned byte	   */
 #define BOOLEAN int				/* 2 valued (true/false)   */
-#define WORD	short int			/* Signed word (16 bits)   */
-#define UWORD	unsigned short int		/* unsigned word	   */
+#define WORD	int			/* Signed word (16 bits)   */
+#define UWORD	unsigned int		/* unsigned word	   */
 
 #define LONG	long				/* signed long (32 bits)   */
 #define ULONG	unsigned long			/* Unsigned long	   */
@@ -23,7 +23,6 @@
 #define VOID	/**/				/* Void function return    */
 #define DEFAULT int				/* Default size 	   */
 #define FLOAT	float				/* Floating Point	   */
-#define DOUBLE	double				/* Double precision	   */
 
 
 /****************************************************************************/
