@@ -285,7 +285,7 @@ text_init()
 {
     WORD i, j;
     WORD id_save;
-    REG struct font_head *fnt_ptr, **chain_ptr;
+    register struct font_head *fnt_ptr, **chain_ptr;
 		
     SIZ_TAB[0] = 32767;
     SIZ_TAB[1] = 32767;
@@ -306,7 +306,7 @@ text_init()
     j = 0;
     while ((fnt_ptr = *chain_ptr++)) {
 	do {
-	    if ( fnt_ptr->flags & DEFAULT )	/* If default save pointer */
+	    if ( fnt_ptr->flags & 1)	/* If default save pointer */
 		def_font = fnt_ptr;
 
 	    if ( fnt_ptr->font_id != id_save ) {/* If new font count */
