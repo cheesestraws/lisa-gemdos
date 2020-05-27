@@ -1,7 +1,7 @@
 #define automem 0	/* =0 automem is hardcoded; =1 do automem discovery */
 			/* also must set cond assem in biosa.s		*/
 /* ccp, startup code for file system -JSL */
-#include "fs.h"
+#include "bios.h"
 #include "disk.h"
 
 extern long oscall();
@@ -75,7 +75,7 @@ cmain()
 	bufl[0] = &bcbx[0]; 			/* fat buffers */
 	bufl[1] = &bcbx[2]; 			/* dir/data buffers */
 	osinit();
-
+	
 #ifdef floppy
 	xsetdrv(0);                     /* 0 if GEMDOSFI.SYS, 2 if GEMDOSHI.SYS */
 #else
@@ -83,6 +83,8 @@ cmain()
 #endif
 
 	xexec(0,"COMMAND.PRG","",env);
+	
+	while(1) { }
 }
 
 bgetmpb(m)		/* trap13, function 0 */
