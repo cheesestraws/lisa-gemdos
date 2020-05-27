@@ -83,8 +83,6 @@ cmain()
 #endif
 
 	xexec(0,"COMMAND.PRG","",env);
-	
-	while(1) { }
 }
 
 bgetmpb(m)		/* trap13, function 0 */
