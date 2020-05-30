@@ -65,7 +65,7 @@
 */
 
 
-#define REG		register		/* register variable	   */
+#define REG				/* register variable	   */
 #define LOCAL		auto			/* Local var on 68000	   */
 #define MLOCAL	static				/* Local to module	   */
 #define GLOBAL	/**/				/* Global variable	   */

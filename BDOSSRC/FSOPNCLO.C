@@ -529,7 +529,7 @@ long	ixdel(dn,f,pos)
 {
 	REG OFD *fd;
 	DMD *dm;
-	REG n2;
+	REG int n2;
 	int n;
 	char c;
 

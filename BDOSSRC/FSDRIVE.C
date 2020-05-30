@@ -65,6 +65,10 @@ long	ckdrv(d)
 	int mask,i;
 	BPB *b;
 
+	static int inited = 0;
+	
+
+
 	mask = 1 << d;
 
 	if (!(mask & drvsel))
@@ -84,13 +88,18 @@ long	ckdrv(d)
 
 	if ((!run->p_curdir[d]) || (!dirtbl[run->p_curdir[d]]))
 	{	/* need to allocate current dir on this drv */
-
-		for (i = 1; i < NCURDIR; i++)	/*  find unused slot	*/
+		dbg("[ ");
+		for (i = 1; i < NCURDIR; i++)	/*  find unused slot	*/ {
+			dbg(".");
 			if (!diruse[i])
 				break;
+		}
+		dbg("] ");
 
-		if (i == NCURDIR)		/*  no slot available	*/
+		if (i == NCURDIR)		/*  no slot available	*/ {
+			dbg("EINTRN");
 			return( EINTRN ) ; 	/*  M01.01.20		*/
+		}
 
 		diruse[i]++;			/*  mark as used	*/
 		dirtbl[i] = drvtbl[d]->m_dtl;	/*  link to DND		*/

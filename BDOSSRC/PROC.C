@@ -73,6 +73,51 @@ GLOBAL	int	supstk[SUPSIZ];
 
 GLOBAL	long	bakbuf[3];
 
+int DBGEN;
+
+wait() {
+	int i;
+	int j;
+	int q;
+	for (i = 0; i < 1000; i++) {
+		for (j=0; j < 50; j++) {
+			q=3;
+		}
+	}
+	return q;
+}
+
+
+dbg(m) 
+char* m;
+{
+	if (DBGEN) {
+		prt_line(2, m);
+		wait();
+	}
+}
+
+dbglx(n)
+long n;
+{
+	int i;
+	long hit;
+	char buf[10];
+	
+	for (i = 0; i < 8; i++) {
+		hit = n & 0x0000000F;
+		n = n >> 4;
+		if (hit < 10) {
+			buf[7-i] = '0' + hit;
+		} else {
+			buf[7 - i] = 'A' + (hit - 10);
+		}
+	}
+	buf[8] = ' ';
+	buf[9] = '\0';
+	dbg(buf);
+}
+
 
 /*  
 **  xexec - execute a new process
@@ -101,6 +146,8 @@ long	xexec(flg,s,t,v)
 #endif
 
 	m = env = 0L ;
+	
+	DBGEN=1;
 
 	/*
 	**  check validity of flg - 1,2 or >5 is not allowed
@@ -113,9 +160,13 @@ long	xexec(flg,s,t,v)
 	**  if we have to load, find the file
 	*/
 
-	if ((flg == 0) || (flg == 3))
-		if (ixsfirst(s,0,0L))
+	if ((flg == 0) || (flg == 3)) {
+		if (ixsfirst(s,0,0L)) {
+			dbg("FNF ");
 			return(EFILNF);		/*  file not found	*/
+		}
+	}
+			
 
 	xmovs(sizeof(errbuf),errbuf,bakbuf);
 
@@ -186,7 +237,6 @@ long	xexec(flg,s,t,v)
 		*/
 
 		bmove( v , e , i ) ;
-
 
 		/* 
 		**  allocate base page
