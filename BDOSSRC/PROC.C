@@ -91,9 +91,14 @@ wait() {
 dbg(m) 
 char* m;
 {
+	char* n;
+	n = m;
 	if (DBGEN) {
-		prt_line(2, m);
-		wait();
+		while (*m != '\0') {
+			trap13(3, 2, (int)(*m));
+			m++;
+		}
+		//wait();
 	}
 }
 
@@ -148,7 +153,7 @@ long	xexec(flg,s,t,v)
 	m = env = 0L ;
 	
 	DBGEN=1;
-
+	
 	/*
 	**  check validity of flg - 1,2 or >5 is not allowed
 	*/
@@ -162,12 +167,12 @@ long	xexec(flg,s,t,v)
 
 	if ((flg == 0) || (flg == 3)) {
 		if (ixsfirst(s,0,0L)) {
-			dbg("FNF ");
 			return(EFILNF);		/*  file not found	*/
 		}
 	}
-			
-
+	
+	dbglx(10L);
+	
 	xmovs(sizeof(errbuf),errbuf,bakbuf);
 
 	if (rc = setjmp(errbuf))
@@ -185,6 +190,8 @@ long	xexec(flg,s,t,v)
 
 		longjmp(bakbuf,rc);
 	}
+	
+	dbglx(11L);
 
 	/* will we need memory and a psp ? */
 
@@ -218,6 +225,9 @@ long	xexec(flg,s,t,v)
 		if (i & 1)		/*  make an even number		*/
 			i += 1;
 #endif
+
+		dbglx(12L);
+
 		/*
 		**  allocate environment
 		*/

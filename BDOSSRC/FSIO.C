@@ -164,14 +164,14 @@ long	ixread(p,len,ubufr)
 	char *ubufr;
 {
 	long maxlen;
-
+	
         /*Make sure file not opened as write only.*/
-        if (p->o_mod == 1)
+    if (p->o_mod == 1)
 		return (EACCDN);
-
+		
 	if (len > (maxlen = p->o_fileln - p->o_bytnum))
 		len = maxlen;
-
+		
 	if (len > 0)
 		return(xrw(0,p,len,ubufr,xfr2usr));
 
@@ -260,13 +260,13 @@ long	xrw(wrtflg,p,len,ubufr,bufxfr)
 	long rc,bytpos,lenrec,lenmid;
 
 	/*
-	**  determine where we currently are in the filef
+	**  determine where we currently are in the file
 	*/
-
+	
 	dm = p->o_dmd;			/*  get drive media descriptor	*/
 
 	bytpos = p->o_bytnum; 		/*  starting file position 	*/
-
+	
 	/*
 	**  get logical record number to start i/o with
 	**	(bytn will be byte offset into sector # recn)
@@ -274,7 +274,7 @@ long	xrw(wrtflg,p,len,ubufr,bufxfr)
 
 	recn = divmod(&bytn,(long) p->o_curbyt,dm->m_rblog);
 	recn += p->o_currec;
-
+	
 	/*
 	**  determine "header" of request.
 	*/
@@ -299,7 +299,7 @@ long	xrw(wrtflg,p,len,ubufr,bufxfr)
 		(*bufxfr)(lenxfr,bufp+bytn,ubufr);	
 		ubufr += lenxfr;
 	}
-
+	
 	/*
 	**  "header" complete.  See if there is a "tail".  
 	**  After that, see if there is anything left in the middle.
@@ -375,7 +375,7 @@ mulio:				if (nrecs)
 				}
 			}
 		}  /*  end while  */
-
+		
 		/* 
 		**  do "tail" records 
 		*/
@@ -390,7 +390,7 @@ mulio:				if (nrecs)
 			ubufr += lsiz;
 		}
 	}
-
+	
 	/* 
 	**	do tail bytes within this cluster 
 	*/
@@ -405,7 +405,7 @@ mulio:				if (nrecs)
 				goto eof;
 			recn = 0;
 		}
-
+		
 		bufp = getrec(p->o_currec+recn,dm,wrtflg);
 		addit(p,(long) lentail,1);
 
@@ -414,10 +414,11 @@ mulio:				if (nrecs)
 			rc = (long) bufp;
 			goto exit;
 		}
-
+		
 		(*bufxfr)(lentail,bufp,ubufr,wrtflg);
+		
 	} /*  end tail bytes  */
-
+	
 eof:	rc = p->o_bytnum - bytpos;
 exit:	return(rc);
 

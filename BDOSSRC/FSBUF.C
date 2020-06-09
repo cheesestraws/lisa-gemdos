@@ -71,7 +71,7 @@ char	*getrec(recn,dm,wrtflg)
 	REG BCB	*b;
 	BCB	*p,*mtbuf,**q,**phdr;
 	int n,cl,err;
-
+	
 	/* put bcb management here */
 
 	cl = recn >> dm->m_clrlog;	/*  calculate cluster nbr	*/
@@ -94,17 +94,17 @@ char	*getrec(recn,dm,wrtflg)
 	*/
 
 	for (b = *(q = phdr); b; b = *(q = &b->b_link))
-	{
+	{	
 		if ((b->b_bufdrv == dm->m_drvnum) && (b->b_bufrec == recn))
 			break;
+			
 		/*  
 		**  keep track of the last invalid buffer
 		*/
 		if (b->b_bufdrv == -1)		/*  if buffer not valid	*/
 			mtbuf = b;		/*    then it's 'empty'	*/
 	}
-
-
+		
 	if (!b)
 	{	/* 
 		**  not in memory.  If there was an 'empty; buffer, use it.
@@ -152,7 +152,8 @@ doio:		for (p = *(q = phdr); p->b_link; p = *(q = &p->b_link))
 				longjmp(errbuf,rwerr);
 			}
 	}
-
+	
+		
 	/*
 	**  now put the current buffer at the head of the list
 	*/
@@ -167,7 +168,7 @@ doio:		for (p = *(q = phdr); p->b_link; p = *(q = &p->b_link))
 
 	if (wrtflg)
 		b->b_dirty = 1;
-
+				
 	return(b->b_bufr);
 }
 

@@ -735,7 +735,7 @@ long	ixsfirst(name,att,addr)
 
 	if (att != 8)
 		att |= 0x21;
-
+		
 #if	M0101071401
 	if ( (long)(dn = findit(name,&s,0))  < 0 )		/* M01.01.1212.01 */
 		return( dn );
@@ -751,7 +751,7 @@ long	ixsfirst(name,att,addr)
  /* now scan for filename from start of directory */
 
 	pos = 0;
-
+	
 #if	M0101071401
 	if(  (f = scan(dn,s,att,&pos))  ==  NULLPTR  )
 		return(EFILNF);
@@ -773,7 +773,7 @@ long	ixsfirst(name,att,addr)
 		addr->dt_dnd = dn ;
 		makbuf( f , addr ) ;
 	}
-
+	
 	return(E_OK);
 }
 
@@ -1150,11 +1150,11 @@ FCB	*scan(dnd,n,att,posp)
 	OFD	*fd;
 	DND	*dnd1;
 	BOOL	m;		/*  T: found a matching FCB		*/
-
+	
 	m = 0;			/*  have_match = false			*/
 	builds(n,name);		/*  format name into dir format		*/
 	name[11] = att;
-
+	
 	/*
 	**  if there is no open file descr for this directory, make one
 	*/
@@ -1166,18 +1166,18 @@ FCB	*scan(dnd,n,att,posp)
 			return ( (FCB *) 0 );
 		}
 	}
-
+	
 	/*
 	**  seek to desired starting position.  If posp == -1, then start at
 	**	the beginning.
 	*/
 
 	ixlseek( fd , (*posp == -1) ? 0L : *posp ) ;
-
+	
 	/*
 	**  scan thru the directory file, looking for a match
 	*/
-
+		
 	while ((fcb = (FCB *) ixread(fd,32L,NULPTR)) && (fcb->f_name[0]))
 	{
 		/* 
@@ -1203,7 +1203,7 @@ FCB	*scan(dnd,n,att,posp)
 		if (m = match( name , fcb->f_name ))
 			break;
 	}
-
+		
 	/* restore directory scanning pointer */
 
 	if( *posp != -1L )
