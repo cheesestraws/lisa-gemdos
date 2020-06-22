@@ -26,6 +26,18 @@ int n;
 	xmfreblk(buf);
 }
 
+bzero(d, n)
+char* d;
+int n;
+{
+	int i;
+		
+	for (i = 0; i < n; i++) {
+		d[i] = 0;
+	}
+}
+
+
 lbmove(s, d, n)
 char* s;
 char* d;

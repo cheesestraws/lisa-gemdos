@@ -90,7 +90,7 @@ CLNO	getcl(cl,dm)
 	DMD *dm;
 {
 	unsigned f[1];
-
+	
 	if (cl < 0)
 		return(cl+1);
 
@@ -101,9 +101,10 @@ CLNO	getcl(cl,dm)
 		swp68(f[0]);
 		return(f[0]);
 	}
-
+	
 	ixlseek(dm->m_fatofd,((long) (cl + (cl >> 1))));
 	ixread(dm->m_fatofd,2L,f);
+
 	swp68(f[0]);
 
 	if (cl & 1)
@@ -140,7 +141,7 @@ nextcl(p,wrtflg)
 	CLNO	rover ;
 	CLNO	cl,cl2 ;				/*  M01.01.03	*/
 	CLNO	getcl() ;
-
+	
 	cl = p->o_curcl;
 	dm = p->o_dmd;
 
@@ -149,12 +150,13 @@ nextcl(p,wrtflg)
 		cl2 = cl + 1;
 		goto retcl;
 	}
-
+	
 	if((int)(cl) > 0)
 		cl2 = getcl(cl,dm);
-
-	if (cl == 0)
+				
+	if (cl == 0) {
 		cl2 = (p->o_strtcl ? p->o_strtcl : 0xffff );
+	}
 
 	if (wrtflg && (cl2 == 0xffff ))
 	{ /* end of file, allocate new clusters */

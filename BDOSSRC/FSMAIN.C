@@ -527,8 +527,6 @@ OFD	*makofd(p)
 }
 
 
-
-
 /*
 **  getofd -
 */

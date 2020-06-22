@@ -202,7 +202,7 @@ long	ixopen(name, mod)
 	DND *dn;
 	char *s;
 	long pos;
-
+		
         /* first find path */
 	if ((long)(dn = findit(name,&s,0)) < 0)			/* M01.01.1212.01 */
 		return( dn );
@@ -212,16 +212,16 @@ long	ixopen(name, mod)
         /* 
 	**  now scan the directory file for a matching filename 
 	*/
-	
+		
 	pos = 0;
 	if (!(f = scan(dn,s,FA_NORM,&pos)))
 		return(EFILNF);
-
-        /* Check to see if the file is read only*/
-        if ((f -> f_attrib & 1) && (mod != 0))
-        	return (EACCDN);
-
-       	return (opnfil (f, dn, mod));
+		
+	/* Check to see if the file is read only*/
+	if ((f -> f_attrib & 1) && (mod != 0))
+		return (EACCDN);
+		
+	return (opnfil (f, dn, mod));
 }
 
 
@@ -245,19 +245,20 @@ long	opnfil(f, dn, mod)
 	int h;
 
 	long	makopn() ;
-
+	
 	/* find free sft handle */
 	for (i = 0; i < OPNFILES; i++)
 		if( !sft[i].f_own )
 			break;
 
-	if (i == OPNFILES)
+	if (i == OPNFILES) {
 		return(ENHNDL);
+	}
 
 	sft[i].f_own = run;
 	sft[i].f_use = 1;
 	h = i+NUMSTD;
-
+	
 	return(makopn(f, dn, h, mod));
 }
 

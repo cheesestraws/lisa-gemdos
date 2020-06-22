@@ -40,15 +40,16 @@ ERROR	xpgmld( s , p )
 	FH		h ;
 	WORD		magic ;
 	ERROR		pgmld01() ;
+	
 
-
-	if(  (r = xopen( s , 0 )) < 0L  )	/*  open file for read	*/
+	if(  (r = xopen( s , 0 )) < 0L  )	/*  open file for read	*/ {
 		return( r ) ;
+	}
 
 	h = (int) r ;				/*  get file handle	*/
-
-	if( (r = xread( h, 2L, &magic)) < 0L )	/*  read magic nbr	*/
+	if( (r = xread( h, 2L, &magic)) < 0L )	/*  read magic nbr	*/ {
 		return( r ) ;
+	}
 
 	/*
 	**  the following switch statement will allow us to call different
@@ -75,7 +76,6 @@ ERROR	xpgmld( s , p )
 */
 
 static BYTE	*lastcp ;
-
 
 /*
 **  pgmld01 - oldest known gemdos load format - very similar to cp/m 68k
@@ -108,7 +108,6 @@ ERROR	pgmld01( h , pdptr )
 	ERROR		r ;
 	ERROR		pgfix01() ;
 
-
 	hd = & hdr ;
 	pi = &pinfo ;
 	p = pdptr ;
@@ -118,8 +117,9 @@ ERROR	pgmld01( h , pdptr )
 	**  read in the program header 
 	*/
 
-	if(   ( r = xread(h,(LONG)sizeof(PGMHDR01),&hdr) )  <  0L  )
+	if(   ( r = xread(h,(LONG)sizeof(PGMHDR01),&hdr) )  <  0L  ) {
 		return( r ) ;
+	}
 
 	/*
 	**  calculate program load info
@@ -139,24 +139,25 @@ ERROR	pgmld01( h , pdptr )
 	**  the requested bss space is larger than the space we have to offer
 	*/
 
-	if( flen > pi->pi_tpalen  ||  pi->pi_tpalen-flen < pi->pi_blen )
+	if( flen > pi->pi_tpalen  ||  pi->pi_tpalen-flen < pi->pi_blen ) {
 		return( ENSMEM ) ;
-
+	}
+	
 	/*
 	**  initialize PD fields
 	*/
 
 	bmove( (char*)&pi->pi_tbase , (char*)&p->p_tbase , 6 * sizeof(long) ) ;
-
+	
 	/*  
 	**  read in the program file (text and data)
 	**  if there is an error reading in the file or if it is an abs
 	**	file, then we are finished  
 	*/
-
-	if(  (r = xread(h,flen,pi->pi_tbase)) < 0  )
+	if(  (r = xread(h,flen,pi->pi_tbase)) < 0  ) {
 		return( r ) ;
-
+	}
+	
 	if( hd->h01_abs )
 		return( SUCCESS ) ;	/*  do we need to clr bss here?	*/
 
@@ -166,17 +167,19 @@ ERROR	pgmld01( h , pdptr )
 	**	init'd to 0, so if the format is absolute, we will not drop
 	**	into the fixup code.
 	*/
-
+	
 	if( !hd->h01_abs )
 	{
 		/**********  should change hard coded 0x1c  ******************/
-		if(  (r = xlseek(flen+pi->pi_slen+0x1c,h,0)) < 0L  )
+		if(  (r = xlseek(flen+pi->pi_slen+0x1c,h,0)) < 0L  ) {
 			return( r ) ;
+		}
 
-		if(  (r = xread( h , (long)sizeof(relst) , &relst ))  <  0L  )
+		if(  (r = xread( h , (long)sizeof(relst) , &relst ))  <  0L  ) {
 			return( r ) ;
+		}
 	}
-
+	
 	if( relst != 0 )
 	{
 		cp = pi->pi_tbase + relst ;
@@ -201,20 +204,21 @@ ERROR	pgmld01( h , pdptr )
 				break ;
 		}
 
-		if ( r < 0 )			/* M01.01.1023.01 */
+		if ( r < 0 )			/* M01.01.1023.01 */ {
 			return( r );
+		}
 	}
-
+	
 	/*  zero out the bss  */
-
 	if( pi->pi_blen != 0 )
 	{
 		*pi->pi_bbase = 0 ;
 		if( pi->pi_blen > 1 )
-			lbmove(pi->pi_bbase, pi->pi_bbase+1, pi->pi_blen-1) ;
+			bzero(pi->pi_bbase, pi->pi_blen);
+			//lbmove(pi->pi_bbase, pi->pi_bbase+1, pi->pi_blen-1) ;
 
 	}
-
+		
 	return( SUCCESS ) ;
 }
 

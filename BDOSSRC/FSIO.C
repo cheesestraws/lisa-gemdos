@@ -124,6 +124,7 @@ fillin:	p->o_curcl = clx;
 
 
 
+int DBGREAD = 0;
 
 /*
 **  xread -
@@ -145,7 +146,7 @@ long	xread(h,len,ubufr)
 {
 	OFD	*p;
 	long	ixread() ;
-
+	
 	if (p = getofd(h))
 		return(ixread(p,len,ubufr));
 
@@ -164,16 +165,17 @@ long	ixread(p,len,ubufr)
 	char *ubufr;
 {
 	long maxlen;
-	
-        /*Make sure file not opened as write only.*/
+		
+    /*Make sure file not opened as write only.*/
     if (p->o_mod == 1)
 		return (EACCDN);
 		
 	if (len > (maxlen = p->o_fileln - p->o_bytnum))
 		len = maxlen;
-		
-	if (len > 0)
+				
+	if (len > 0) {
 		return(xrw(0,p,len,ubufr,xfr2usr));
+	}
 
 	return(0L);	/* zero bytes read for zero requested */
 }
@@ -258,7 +260,7 @@ long	xrw(wrtflg,p,len,ubufr,bufxfr)
 	int last, nrecs, lflg; /* multi-sector variables */
 	long nbyts;
 	long rc,bytpos,lenrec,lenmid;
-
+			
 	/*
 	**  determine where we currently are in the file
 	*/
@@ -266,7 +268,7 @@ long	xrw(wrtflg,p,len,ubufr,bufxfr)
 	dm = p->o_dmd;			/*  get drive media descriptor	*/
 
 	bytpos = p->o_bytnum; 		/*  starting file position 	*/
-	
+		
 	/*
 	**  get logical record number to start i/o with
 	**	(bytn will be byte offset into sector # recn)
@@ -274,6 +276,7 @@ long	xrw(wrtflg,p,len,ubufr,bufxfr)
 
 	recn = divmod(&bytn,(long) p->o_curbyt,dm->m_rblog);
 	recn += p->o_currec;
+
 	
 	/*
 	**  determine "header" of request.
@@ -284,8 +287,10 @@ long	xrw(wrtflg,p,len,ubufr,bufxfr)
 		**  xfer len is
 		**	min( #bytes req'd , #bytes left in current record )
 		*/
+				
 		lenxfr = min(len,dm->m_recsiz-bytn);
 		bufp = getrec(recn,dm,wrtflg);	/*  get desired record	*/
+		
 		addit(p,(long) lenxfr,1);	/*  update ofd		*/
 		len -= lenxfr;			/*  nbr left to do	*/
 		recn++;				/*    starting w/ next	*/
@@ -339,6 +344,7 @@ long	xrw(wrtflg,p,len,ubufr,bufxfr)
 
 		last = nrecs = nbyts = lflg = 0;
 
+
 		while (num--)		/*  for each whole cluster...	*/
 		{
 			rc = nextcl(p,wrtflg);
@@ -348,7 +354,7 @@ long	xrw(wrtflg,p,len,ubufr,bufxfr)
 			**	of request, 
 			**	then finish pending I/O 
 			*/
-
+			
 			if ((!rc) && (p->o_currec == last + nrecs))
 			{
 				nrecs += dm->m_clsiz;
@@ -374,8 +380,9 @@ mulio:				if (nrecs)
 					goto mulio;
 				}
 			}
+
 		}  /*  end while  */
-		
+				
 		/* 
 		**  do "tail" records 
 		*/
@@ -390,19 +397,22 @@ mulio:				if (nrecs)
 			ubufr += lsiz;
 		}
 	}
-	
+		
+		
 	/* 
 	**	do tail bytes within this cluster 
 	*/
-
+	
 	if (lentail)
-	{
+	{	
 		recn = divmod(&bytn,(long) p->o_curbyt,dm->m_rblog);
-
+		
 		if ((!recn) || (recn == dm->m_clsiz))
 		{
-			if (nextcl(p,wrtflg))
+			if (nextcl(p,wrtflg)) {
 				goto eof;
+			}
+
 			recn = 0;
 		}
 		
@@ -414,7 +424,7 @@ mulio:				if (nrecs)
 			rc = (long) bufp;
 			goto exit;
 		}
-		
+				
 		(*bufxfr)(lentail,bufp,ubufr,wrtflg);
 		
 	} /*  end tail bytes  */

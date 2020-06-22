@@ -75,19 +75,6 @@ GLOBAL	long	bakbuf[3];
 
 int DBGEN;
 
-wait() {
-	int i;
-	int j;
-	int q;
-	for (i = 0; i < 1000; i++) {
-		for (j=0; j < 50; j++) {
-			q=3;
-		}
-	}
-	return q;
-}
-
-
 dbg(m) 
 char* m;
 {
@@ -122,6 +109,28 @@ long n;
 	buf[9] = '\0';
 	dbg(buf);
 }
+
+dbgx(n)
+int n;
+{
+	int i;
+	int hit;
+	char buf[6];
+	
+	for (i = 0; i < 4; i++) {
+		hit = n & 0x000F;
+		n = n >> 4;
+		if (hit < 10) {
+			buf[3-i] = '0' + hit;
+		} else {
+			buf[3 - i] = 'A' + (hit - 10);
+		}
+	}
+	buf[4] = ' ';
+	buf[5] = '\0';
+	dbg(buf);
+}
+
 
 
 /*  
@@ -170,9 +179,7 @@ long	xexec(flg,s,t,v)
 			return(EFILNF);		/*  file not found	*/
 		}
 	}
-	
-	dbglx(10L);
-	
+		
 	xmovs(sizeof(errbuf),errbuf,bakbuf);
 
 	if (rc = setjmp(errbuf))
@@ -191,8 +198,6 @@ long	xexec(flg,s,t,v)
 		longjmp(bakbuf,rc);
 	}
 	
-	dbglx(11L);
-
 	/* will we need memory and a psp ? */
 
 	if (flg != 4)
@@ -225,8 +230,6 @@ long	xexec(flg,s,t,v)
 		if (i & 1)		/*  make an even number		*/
 			i += 1;
 #endif
-
-		dbglx(12L);
 
 		/*
 		**  allocate environment
@@ -327,12 +330,12 @@ long	xexec(flg,s,t,v)
 		*b++ = 0;
 		t = (char *) p;
 	}
-
+	
 	/* 
 	**  for 3 or 0, need to load, supply baspage containing: 
 	** 	tpa limits, filled in with start addrs,lens 
 	*/
-
+	
 	if((flg == 0) || (flg == 3)) 
 		if (rc = xpgmld(s,t))
 		{
@@ -343,7 +346,9 @@ long	xexec(flg,s,t,v)
 			ixterm(t);			
 			return(rc);
 		}
-
+		
+	//dbglx(1L);
+		
 	if ((flg == 0) || (flg == 4))
 	{
 		p = (PD *) t;
@@ -370,7 +375,7 @@ long	xexec(flg,s,t,v)
 		p->p_areg[5-3] = p->p_dbase;
 		p->p_areg[4-3] = p->p_bbase;
 		run = (PD *) p;
-
+				
 #if	M0101082701
 		gouser() ;
 #else
