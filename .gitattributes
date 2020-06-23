@@ -1,0 +1,8 @@
+*.C text=crlf
+*.c text=crlf
+*.S text=crlf
+*.s text=crlf
+*.A text=crlf
+*.a text=crlf
+*.BAT text=crlf
+*.bat text=crlf
