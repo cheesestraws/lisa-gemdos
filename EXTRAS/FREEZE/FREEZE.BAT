@@ -9,7 +9,7 @@ era freeze.2
 \tools\as68 -l -s \tools\ -u freeze.s 
 era  freeze.s
 
-\tools\link68 freeze.rel = freeze,mini
+\tools\link68 freeze.rel = freeze
 \tools\relmod freeze.rel freeze.prg
 
 era freeze.rel
