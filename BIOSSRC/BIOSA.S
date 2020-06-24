@@ -44,6 +44,7 @@ panic	equ	0	* 0 if no cmpanic routine available
 	.xref	_slot3i
 	.xref	v100		* timer tick vector
 	.xref	_env
+	.xref	_bssend
 
 	.xdef	_dskinit
 	.xdef	_coninit
@@ -146,9 +147,9 @@ endc
 *	gemdos original
 *
 
-skpcpm:	move.l	#$10000, _lowtpa	* @ at which user's TPA begins
+skpcpm:	move.l	#$12000, _lowtpa	* @ at which user's TPA begins
 ifeq	automem			* hardcode if no automem computations done
-	move.l	#$70000, _lentpa	* length of user's TPA
+	move.l	#$6E000, _lentpa	* length of user's TPA
 endc
 
 *
@@ -157,7 +158,8 @@ endc
 
 clrbss:	move.l	#bssstrt,a0	* get beginning @ of our bss
 clrmor:	clr.w	(a0)+		* zero out our bss to initialize it
-	cmp.l	#$10000,a0
+*	cmp.l	#$10000,a0
+	cmp.l	#$12000,a0
 	bne	clrmor	
 *
 * revector interrupts to us
