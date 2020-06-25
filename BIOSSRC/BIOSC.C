@@ -3,7 +3,7 @@
 #include	"portab.h"
 #include	"io.h"
 #include	"gemerror.h"
-#include	"fs.h"
+#include	"bios.h"
 
 /*
 **  *************************  to go in bios.h ***************************

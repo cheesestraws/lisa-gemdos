@@ -3,7 +3,7 @@
 	cntrlst , auxcmd , auxget , cinstat , cgetc , coutstat , coninit  */
 
 #include	"portab.h"
-#include	"fs.h"
+#include	"bios.h"
 #include	"io.h"
 #include	"interrup.h"
 
