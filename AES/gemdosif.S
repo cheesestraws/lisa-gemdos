@@ -39,12 +39,20 @@
 .globl LEAC2
 .globl _tikcod
 
+.xref _eralert
+.xref _super
+.xref _b_click
+.xref _mchange
+.xref _forkq
+.xref _tchange
+.xref _b_delay
+
 
 
 _cli:
 L1D94:
             move    SR,LEAC2
-            ori     #0x0700,SR
+            ori     #$0700,SR
             rts
 _sti:
 L1DA0:
@@ -52,11 +60,11 @@ L1DA0:
             rts
 _hcli:
 L1DA8:
-            ori     #0x0700,SR
+            ori     #$0700,SR
             rts
 _hsti:
 L1DAE:
-            andi    #0xF8FF,SR
+            andi    #$F8FF,SR
             rts
 
 /*
@@ -64,12 +72,12 @@ L1DAE:
 */
 _retake:
 L1F0C:
-            move.l  #L2102,0x88
+            move.l  #L2102,$88
             move.l  #_err_tra,D0
 L1F1C:
             move.l  D0,-(SP)
-            move.w  #0x0101,-(SP)
-            move.w  #0x05,-(SP)
+            move.w  #$0101,-(SP)
+            move.w  #$05,-(SP)
             trap    #13
             addq.w  #8,SP
             rts
@@ -86,31 +94,31 @@ L1F34:
             bra     L1F1C
 _err_tra:
 L1F46:
-            move.w  0x04(SP),D0
-            move.w  0x06(SP),D1
+            move.w  $04(SP),D0
+            move.w  $06(SP),D1
             movem.l D3-D7/A3-A6,-(SP)
             movea.l #LE3EE,A1
             move.w  D0,-(SP)
             bne     L1F62
-            movea.w #0x00,A0
+            movea.w #$00,A0
             bra     L1F70
 L1F62:
             not.w   D0
             movea.w D0,A0
-            cmp.w   #0x11,D0
+            cmp.w   #$11,D0
             ble     L1F70
-            movea.w #0x00,A0
+            movea.w #$00,A0
 L1F70:
-            move.b  0x00(A0,A1.l),D0
+            move.b  $00(A0,A1.l),D0
             move.w  D1,-(SP)
             move.w  D0,-(SP)
             jsr     _eralert
             addq.l  #4,SP
             move.w  (SP)+,D1
             ext.l   D1
-            cmp.w   #0x00,D0
+            cmp.w   #$00,D0
             beq     L1F90
-            move.l  #0x010000,D1
+            move.l  #$010000,D1
 L1F90:
             move.l  D1,D0
             movem.l (SP)+,D3-D7/A3-A6
@@ -118,18 +126,18 @@ L1F90:
 
 
 L2102:
-            cmpi.w  #0x00,D0
+            cmpi.w  #$00,D0
             beq     _back
-            cmpi.w  #0xC8,D0
+            cmpi.w  #$C8,D0
             beq     L2126
-            cmpi.w  #0xC9,D0
+            cmpi.w  #$C9,D0
             beq     L2126
             move.l  LED4E,-(SP)
             rts
 _back:
 L211C:
-            move.w  #0x00,-(SP)
-            move.w  #0x4C,-(SP)   | Pterm
+            move.w  #$00,-(SP)
+            move.w  #$4C,-(SP)   | Pterm
             trap    #1
 L2126:
             bsr     _cli
@@ -137,14 +145,14 @@ L2126:
             movem.l D1-A6,-(A0)
             move    A0,USP
             movea.l _rlr,A6
-            movea.l 0x08(A6),A6
-            move.w  #0x01,(A6)
-            move.l  A0,0x42(A6)
-            move.l  SP,0x46(A6)
-            movea.l 0x3E(A6),SP
+            movea.l $08(A6),A6
+            move.w  #$01,(A6)
+            move.l  A0,$42(A6)
+            move.l  SP,$46(A6)
+            movea.l $3E(A6),SP
             bsr     _sti
             move.l  D1,-(SP)
-            move.w  #0x00,-(SP)
+            move.w  #$00,-(SP)
             move.w  D0,-(SP)
             movea.l #_super,A0
             jsr     (A0)
@@ -166,39 +174,39 @@ L2126:
 */
 _supret:
 L2160:
-     move.w  0x04(SP),D0
+     move.w  $04(SP),D0
      bsr     _cli
-     adda.l  #0x18,SP
+     adda.l  #$18,SP
      movea.l _rlr,A0
-     movea.l 0x08(A0),A0
+     movea.l $08(A0),A0
      clr.w   (A0)
-     move.l  SP,0x3E(A0)
-     movea.l 0x46(A0),SP
-     movea.l 0x42(A0),A0
+     move.l  SP,$3E(A0)
+     movea.l $46(A0),SP
+     movea.l $42(A0),A0
      movem.l (A0)+,D1-A6
      move    A0,USP
      bsr     _sti
      rte
 
-;
-;
+*
+*
 
 
 _givecpm:
 L1EEA:
-            move.l  LED4E,0x88
+            move.l  LED4E,$88
             rts
 _takecpm:
 L1EF6:
-            move.l  0x88,LED4E
-            move.l  #L2102,0x88
+            move.l  $88,LED4E
+            move.l  #L2102,$88
             rts
 
 
 _setdsss:
 L1EB4:
-            movea.l 0x04(SP),A1
-            move.w  #0x01,(A1)
+            movea.l $04(SP),A1
+            move.w  #$01,(A1)
             rts
 
 
@@ -235,8 +243,8 @@ L21BC:
 */
 _drawrat:
 L21EA:
-            move.w  0x04(SP),D0
-            move.w  0x06(SP),D1
+            move.w  $04(SP),D0
+            move.w  $06(SP),D1
             movea.l _drwaddr,A0
             jsr     (A0)
             rts
@@ -276,8 +284,8 @@ L2234:
 .data
 
 LE3EE:
-     DC.B 0x04,0x01,0x01,0x02,0x01,0x01,0x02,0x02,0x04,0x02,0x02,0x02,0x00,0x03,0x04,0x02
-     DC.B 0x06,0x00
+     DC.B $04,$01,$01,$02,$01,$01,$02,$02,$04,$02,$02,$02,$00,$03,$04,$02
+     DC.B $06,$00
 
 
 .bss
@@ -310,9 +318,9 @@ LED76:
 _NUM_TICK:
             DS.B 4
 _CMP_TICK:
-            DS.B 0x60
+            DS.B $60
 LEDDE:
-            DS.B 0x60
+            DS.B $60
 LEE3E:
 	ds.b	4
 

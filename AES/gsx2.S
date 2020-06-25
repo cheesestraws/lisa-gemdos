@@ -28,11 +28,13 @@
 .globl _i_lptr1
 .globl _m_lptr2
 
+.xref _contrl
+
 _gsx2:
 LD628:
             move.l  #_contrl,LEE5C
             move.l  #LEE5C,D1
-            moveq   #0x73,D0
+            moveq   #$73,D0
             trap    #2
             rts
 
@@ -50,11 +52,11 @@ LD628:
 */
 _mul_div:
 LD63E:
-            link    A6,#0x00
-            move.w  0x0A(A6),D0
+            link    A6,#$00
+            move.w  $0A(A6),D0
             asl.w   #1,D0
-            muls    0x08(A6),D0
-            divs    0x0C(A6),D0
+            muls    $08(A6),D0
+            divs    $0C(A6),D0
             bmi     LD656
             addq.w  #1,D0
             bra     LD658
@@ -68,26 +70,26 @@ LD658:
 
 _i_ptsin:
 LD678:
-            link    A6,#0x00
-            move.l  0x08(A6),LEE64
+            link    A6,#$00
+            move.l  $08(A6),LEE64
             unlk    A6
             rts
 _i_intin:
 LD688:
-            link    A6,#0x00
-            move.l  0x08(A6),LEE60
+            link    A6,#$00
+            move.l  $08(A6),LEE60
             unlk    A6
             rts
 _i_ptsout:
 LD698:
-            link    A6,#0x00
-            move.l  0x08(A6),LEE6C
+            link    A6,#$00
+            move.l  $08(A6),LEE6C
             unlk    A6
             rts
 _i_intout:
 LD6A8:
-            link    A6,#0x00
-            move.l  0x08(A6),LEE68
+            link    A6,#$00
+            move.l  $08(A6),LEE68
             unlk    A6
             rts
 
@@ -101,15 +103,15 @@ _i_ptr2:
 
 _i_lptr1:
 LD6D8:
-            link    A6,#0x00
-            move.l  0x08(A6),_contrl+14  /*L1332A*/
+            link    A6,#$00
+            move.l  $08(A6),_contrl+14  /*L1332A*/
             unlk    A6
             rts
 
 _m_lptr2:
 LD6E8:
-            link    A6,#0x00
-            movea.l 0x08(A6),A0
+            link    A6,#$00
+            movea.l $08(A6),A0
             move.l  _contrl+18,(A0)  /*L1332E*/
             unlk    A6
             rts

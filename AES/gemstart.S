@@ -22,6 +22,17 @@
 
 .globl _totpds
 
+.xref _ad_envr
+.xref _size_th
+.xref _D
+.xref _justret
+.xref _drwaddr
+.xref _tikcod
+.xref _tikaddr
+.xref _gem_mai
+.xref _DOS_ERR
+.xref _DOS_AX
+
 	.text
 
 _main:
@@ -30,39 +41,39 @@ _main:
 	movea.l	4(a5),a5
 /*
 	move.l	a5,d0
-	add.l	#0x80,d0
+	add.l	#$80,d0
 	move.l	d0,_ad_ctai
 */
-	move.l	0xC(a5),d0
-	add.l	0x14(a5),d0
-	add.l	0x1C(a5),d0
-	add.l	#0x100,d0
+	move.l	$C(a5),d0
+	add.l	$14(a5),d0
+	add.l	$1C(a5),d0
+	add.l	#$100,d0
 	move.l	d0,-(a7)
 	move.l	a5,-(a7)
 	move.w	d0,-(a7)
-	move.w	#0x4A,-(a7)
+	move.w	#$4A,-(a7)
 	trap	#1
-	adda.l	#0xC,a7
+	adda.l	#$C,a7
 /* 68010 test disabled at the moment... */
 /*
 	clr.w	is68010
 	movea.l	a7,a0
-	movea.l	0x20,a1
-	move.l	#L5A,0x20
+	movea.l	$20,a1
+	move.l	#L5A,$20
 	move	sr,d0
 	bra	L66
 L5A:
-	move.w	#0x1,is68010
-	andi.w	#0xDFFF,sr
+	move.w	#$1,is68010
+	andi.w	#$DFFF,sr
 L66:
-	move.l	a1,0x20
+	move.l	a1,$20
 	movea.l	a0,a7
 */
 	move.l	a7,-(a7)
-	move.w	#0x20,-(a7)
+	move.w	#$20,-(a7)
 	trap	#1
 	addq.w	#6,a7
-	move.l	0x2C(a5),_ad_envrn
+	move.l	$2C(a5),_ad_envrn
 /*
 	move.w	#0,_gl_resc
 	move.w	#1,_gl_rest
@@ -83,8 +94,8 @@ LB4:
 	move.l	a0,_tikaddr
 	movea.l	#_D,a6
 	movea.l	a6,a5
-	adda.l	#0x74A,a6
-	move.l	a6,0x3E(a5)
+	adda.l	#$74A,a6
+	move.l	a6,$3E(a5)
 	movea.l	a6,a7
 	jsr	_gem_main
 	move.l	#0,-(a7)
@@ -107,12 +118,12 @@ LF2:
             trap    #1
             cmp.l   #0,D0
             bge     L134
-            move.w  #0x01,_DOS_ERR
+            move.w  #$01,_DOS_ERR
             move.w  D0,_DOS_AX
-            cmp.w   #0xFFE0,D0
+            cmp.w   #$FFE0,D0
             bgt     L134
             not.w   _DOS_AX
-            subi.w  #0x1E,_DOS_AX
+            subi.w  #$1E,_DOS_AX
 L134:
             move.l  LEA2C,-(SP)
             rts
@@ -127,7 +138,7 @@ LE3E6:
             DC.B 0
 
 errormsg:
-	.ascii	"GEMDOS: Nr=0x%x Parm=0x%x\n\0"
+	.dc.b	"GEMDOS: Nr=$%x Parm=$%x",13,0
         .even
 
 
@@ -151,7 +162,7 @@ _gl_resp:
 */
 
 * Space for the Stack:
-	.ds.b	0x80
+	.ds.b	$80
 LEABC:
 
 

@@ -27,8 +27,8 @@
 
 _LSTCPY:
 LD6FA:
-            movea.l 0x08(SP),A0
-            movea.l 0x04(SP),A1
+            movea.l $08(SP),A0
+            movea.l $04(SP),A1
             clr.l   D0
 LD704:
             addq.b  #1,D0
@@ -47,8 +47,8 @@ LD704:
 
 _LBWMOV:
 LD70E:
-            movea.l 0x08(SP),A0
-            movea.l 0x04(SP),A1
+            movea.l $08(SP),A0
+            movea.l $04(SP),A1
             clr.l   D0
             clr.l   D1
 LD71A:

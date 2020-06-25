@@ -14,9 +14,6 @@
 *	-------------------------------------------------------------
 */
 
-#include <string.h>
-
-
 #define	PCDOS	0	/* IBM PC DOS */
 #define	CPM	0	/* CP/M version 2.2 */
 #define GEMDOS	1	/* GEM DOS		*/
@@ -82,6 +79,8 @@ EXTERN WORD	LBWMOV();
 #endif /* I8086 */
 
 #if MC68K
+extern memcpy();
+extern strlen();
 						/* Use memcpy to copy bytes: */
 #define LWCOPY(dest,src,len) memcpy((void *)(dest), (void*)(src), (len)*2)
 						/* Use memcpy to copy bytes: */
