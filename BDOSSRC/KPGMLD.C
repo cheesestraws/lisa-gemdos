@@ -214,7 +214,7 @@ ERROR	pgmld01( h , pdptr )
 	{
 		*pi->pi_bbase = 0 ;
 		if( pi->pi_blen > 1 )
-			bzero(pi->pi_bbase, pi->pi_blen);
+			bzerol(pi->pi_bbase, pi->pi_blen);
 			//lbmove(pi->pi_bbase, pi->pi_bbase+1, pi->pi_blen-1) ;
 
 	}

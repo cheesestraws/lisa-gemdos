@@ -37,6 +37,18 @@ int n;
 	}
 }
 
+bzerol(d, n)
+char* d;
+long n;
+{
+	long i;
+		
+	for (i = 0; i < n; i++) {
+		d[i] = 0;
+	}
+}
+
+
 
 lbmove(s, d, n)
 char* s;
