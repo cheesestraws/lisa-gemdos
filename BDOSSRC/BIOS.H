@@ -13,7 +13,7 @@
 */
 
 #ifndef	M0101080401
-#define	M0101080401	1
+#define	M0101080401	0
 #endif
 
 
