@@ -1,6 +1,26 @@
 #include <mini.h>
 #include <gemerror.h>
 
+#define GetBPB(a) bios(7,a)
+#define RWAbs(a,b,c,d,e) bios(4,a,b,c,d,e)
+
+#define BPB struct _bpb
+BPB /* bios parameter block */
+{
+	int	recsiz;
+	int	clsiz;
+	int 	clsizb;
+	int	rdlen;	/* root directory length in records */
+	int	fsiz;	/* fat size in records */
+	int	fatrec;	/* first fat record (of last fat) */
+	int	datrec;	/* first data record */
+	int	numcl;	/* number of data clusters available */
+        int     b_flags;
+} ;
+
+#define BUFSIZ 512
+char buf[BUFSIZ];
+
 char BP();
 long LP();
 
@@ -10,6 +30,9 @@ char* p;
 	char* sp;
 	char b;
 	long l;
+	BPB *bpb;
+	unsigned long capacity;
+	int err;
 		
 	sp = S_State(0L);
 
@@ -39,6 +62,19 @@ char* p;
 	C_ConWS("Top of memory: 0x");
 	dbglx(l);
 	C_ConWS("\r\n");
+	
+	C_ConWS("\r\n");
+	bpb = GetBPB(2);
+	C_ConWS("C: BPB claims ");
+	C_ConWI(bpb->numcl);
+	C_ConWS(" clusters of ");
+	C_ConWI(bpb->clsizb);
+	C_ConWS(" bytes\r\n");
+	
+	C_ConWS("\r\n");
+	
+	capacity = 0;
+	errRwAbs(0, 
 	
 	S_State(sp);	
 	P_Term(0);
