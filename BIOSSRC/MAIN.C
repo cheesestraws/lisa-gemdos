@@ -2,7 +2,6 @@
 			/* also must set cond assem in biosa.s		*/
 /* ccp, startup code for file system -JSL */
 #include "bios.h"
-#include "disk.h"
 
 extern long oscall();
 #define xexec(a,b,c,d) oscall(0x4b,a,b,c,d)
@@ -78,15 +77,30 @@ cmain()
 	bufl[1] = &bcbx[2]; 			/* dir/data buffers */
 
 	osinit();
-		
-#ifdef floppy
-	xsetdrv(0);                     /* 0 if GEMDOSFI.SYS, 2 if GEMDOSHI.SYS */
-#else
-        xsetdrv(2);
-#endif
-
+	xsetdrv(lbootdrv());
 
 	xexec(0,"COMMAND.PRG","",env);
+}
+
+/* lbootdrv looks in low memory to find what device the Lisa booted from */
+lbootdrv()
+{
+	char* b;
+	
+	b = (char*)(0x01B3L); /* $183 => boot device */
+	
+	if (*b == 0) {
+		/* On some 2/5s, the internal hard disc shows up as boot device 0.
+		   On Lisa 1s, 0 is the upper twiggy drive, but GEMDOS probably
+		   doesn't work on a Lisa 1, and even if it does I have no ability
+		   to test it.  So for now we'll just assume it's a 2. */
+		return 2;
+	}
+	if (*b == 1) {
+		/* Sony floppy drive */
+		return 0;
+	}
+	return (int)(*b);
 }
 
 bgetmpb(m)		/* trap13, function 0 */

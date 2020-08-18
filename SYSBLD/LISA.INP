@@ -1,4 +1,4 @@
-[abs,u,text[41c]] gemdosfi.sys = 
+[abs,u,text[41c]] gemdos.sys = 
 biosa, biosc, main, conio, 8x12, rdabs, profiglu, profilio, lisaesc, 
 sony, bdosmain, rwa, proc, sup, umem, iumem, osmem, fsmain, fsbuf, fsdir, fsdrive, 
 fsfat, fsglob, fshand, fsio, fsopnclo, console, kpgmld, time, siomain, 
