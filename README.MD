@@ -1,3 +1,7 @@
+# Archived
+
+As part of my move away from using github, and since I do not anticipate any further work on this, this repository has been made read-only.  I encourage people who want a copy of the code to take one, as I do not guarantee its continued availability here or through any other channel I control.
+
 # GEMDOS for the Apple Lisa
 
 This repository contains nearly all you need to build Digital Research's GEMDOS for the Apple Lisa.  The only other thing you need is an Atari ST emulator.  I recommend Hatari, simply because that is the one I have tested it on.
